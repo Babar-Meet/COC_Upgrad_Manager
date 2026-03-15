@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clash Builder Upgrade Planner</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
+      :root {
+        --primary: #00eaff;
+        --primary-glow: rgba(0, 234, 255, 0.4);
+        --secondary: #ff4081;
+        --bg-dark: #0a0e17;
+        --bg-card: rgba(20, 30, 50, 0.7);
+        --bg-card-light: rgba(35, 50, 80, 0.5);
+        --text: #ffffff;
+        --text-secondary: #8899aa;
+        --success: #00ffc3;
+        --danger: #ff4466;
+        --warning: #ffaa00;
+        --border: rgba(255, 255, 255, 0.08);
+        --radius: 20px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg-dark);
+        color: var(--text);
+        margin: 0;
+        padding: 30px;
+        min-height: 100vh;
+        background: 
+          radial-gradient(ellipse at 20% 20%, rgba(0, 150, 200, 0.15) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 80%, rgba(0, 100, 150, 0.1) 0%, transparent 50%),
+          linear-gradient(180deg, #0a0e17 0%, #0f1923 100%);
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      /* Premium Header */
+      .header {
+        text-align: center;
+        margin-bottom: 35px;
+        position: relative;
+      }
+
+      .header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, #fff 0%, var(--primary) 50%, var(--success) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+        text-shadow: 0 0 60px var(--primary-glow);
+        letter-spacing: -1px;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        max-width: 500px;
+        margin: 0 auto;
+        font-size: 1.1rem;
+        font-weight: 400;
+        opacity: 0.8;
+      }
+
+      /* Glass Cards */
+      .glass-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: var(--radius);
+        padding: 28px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      }
+
+      /* Full Width Stats */
+      .stats-section {
+        margin-bottom: 25px;
+      }
+
+      .stats-card h2 {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .stats-grid-main {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .th-stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 15px;
+        border-top: 1px solid var(--border);
+      }
+
+      .th-stat-item {
+        background: var(--bg-card-light);
+        border-radius: 12px;
+        padding: 14px 18px;
+        text-align: center;
+        border: 1px solid var(--border);
+        min-width: 100px;
+        transition: all 0.3s ease;
+      }
+
+      .th-stat-item:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+      }
+
+      .th-stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+      }
+
+      .th-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+      }
+
+      .stat-item {
+        background: var(--bg-card-light);
+        border-radius: 14px;
+        padding: 20px 12px;
+        text-align: center;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+      }
+
+      .stat-item:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary);
+        box-shadow: 0 5px 20px rgba(0, 234, 255, 0.15);
+      }
+
+      .stat-item.highlight {
+        background: linear-gradient(135deg, rgba(0, 234, 255, 0.2), rgba(0, 255, 195, 0.1));
+        border-color: var(--primary);
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        background: linear-gradient(135deg, #fff, var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .stat-value.small {
+        font-size: 1.2rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+      }
+
+      /* Full Width Form */
+      .form-section {
+        margin-bottom: 25px;
+      }
+
+      .upgrade-form h2 {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .form-control {
+        background: var(--bg-card-light);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        padding: 14px 18px;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.3s;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.15);
+        background: rgba(0, 234, 255, 0.05);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.5;
+      }
+
+      select.form-control {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300eaff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 40px;
+      }
+
+      /* Level Slider */
+      .slider-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .slider-container input[type="range"] {
+        flex: 1;
+        height: 6px;
+        background: var(--bg-card-light);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      .slider-container input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--success));
+        cursor: pointer;
+        box-shadow: 0 0 10px var(--primary-glow);
+      }
+
+      .slider-container input[type="number"] {
+        width: 65px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      /* Time Inputs */
+      .time-inputs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .time-inputs input {
+        text-align: center;
+        font-weight: 600;
+      }
+
+      /* Premium Buttons */
+      .btn {
+        background: linear-gradient(135deg, var(--primary), #00b8d4);
+        border: none;
+        padding: 16px 32px;
+        color: #000;
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 700;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 20px rgba(0, 234, 255, 0.3);
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 234, 255, 0.5);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: none;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, var(--success), #00cc99);
+        box-shadow: 0 4px 20px rgba(0, 255, 195, 0.3);
+      }
+
+      .btn-success:hover {
+        box-shadow: 0 8px 30px rgba(0, 255, 195, 0.5);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #cc2244);
+        box-shadow: 0 4px 20px rgba(255, 68, 102, 0.3);
+      }
+
+      .btn-danger:hover {
+        box-shadow: 0 8px 30px rgba(255, 68, 102, 0.5);
+      }
+
+      /* Filter Buttons */
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 12px 24px;
+        border-radius: 12px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .filter-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .filter-btn.active {
+        background: linear-gradient(135deg, var(--primary), #00b8d4);
+        color: #000;
+        border-color: var(--primary);
+        box-shadow: 0 4px 20px rgba(0, 234, 255, 0.3);
+      }
+
+      /* Task Cards */
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .task-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .task-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary), var(--success));
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .task-card:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 234, 255, 0.3);
+      }
+
+      .task-card:hover::before {
+        opacity: 1;
+      }
+
+      .task-card.done {
+        background: rgba(0, 50, 40, 0.5);
+        border-color: rgba(0, 255, 195, 0.2);
+        animation: completedPulse 2s infinite;
+      }
+
+      @keyframes completedPulse {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(0, 234, 255, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(0, 234, 255, 0.6), 0 0 50px rgba(0, 234, 255, 0.3);
+        }
+      }
+
+      .task-card.done::before {
+        background: var(--success);
+        opacity: 1;
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .task-info {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .th-img {
+        width: 65px;
+        height: 65px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+        box-shadow: 0 0 20px var(--primary-glow);
+        transition: all 0.3s;
+      }
+
+      .task-card:hover .th-img {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px var(--primary-glow);
+      }
+
+      .task-details h3 {
+        font-size: 1.25rem;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .task-details p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .task-level {
+        display: inline-block;
+        background: rgba(0, 234, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        margin-top: 8px;
+        border: 1px solid rgba(0, 234, 255, 0.3);
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .task-time {
+        text-align: right;
+      }
+
+      .time-remaining {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--success), var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 4px;
+      }
+
+      .time-finished {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--success);
+        text-shadow: 0 0 20px rgba(0, 255, 195, 0.5);
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+        justify-content: flex-end;
+      }
+
+      .action-btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-family: inherit;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .action-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Replace Box */
+      .replace-box {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+      }
+
+      .replace-box input,
+      .replace-box select {
+        flex: 1;
+        min-width: 140px;
+      }
+
+      /* Group Title */
+      .group-title {
+        font-weight: 700;
+        color: var(--primary);
+        margin: 30px 0 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state img {
+        width: 140px;
+        margin-bottom: 30px;
+        opacity: 0.3;
+        filter: grayscale(1);
+      }
+
+      .empty-state h3 {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+        color: var(--text);
+      }
+
+      /* Animations */
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .task-card {
+        animation: slideIn 0.4s ease-out;
+      }
+
+      /* Responsive */
+      @media (max-width: 1100px) {
+        .stats-grid-main {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .form-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+        
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .stats-grid-main {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .th-stats {
+          justify-content: center;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .task-header {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+
+        .task-time {
+          text-align: left;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        .filter-buttons {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .time-inputs {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 500px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⚔️ Clash Builder</h1>
+        <p>Plan and track your Clash of Clans upgrades with style</p>
+      </div>
+
+      <!-- Full Width Stats Section -->
+      <div class="glass-card stats-section">
+        <h2>📊 Statistics</h2>
+        <div class="stats-grid-main">
+          <div class="stat-item">
+            <div class="stat-value" id="totalUpgrades">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-item highlight">
+            <div class="stat-value" id="completedUpgrades">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="activeUpgrades">0</div>
+            <div class="stat-label">Active</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="timeRemaining">0d</div>
+            <div class="stat-label">Time Left</div>
+          </div>
+        </div>
+        <!-- TH breakdown -->
+        <div class="th-stats" id="thStats">
+          <!-- Dynamic TH stats will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Full Width Add Form Section -->
+      <div class="glass-card form-section">
+        <h2>⚒️ Add New Upgrade</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="th">Town Hall</label>
+            <select id="th" class="form-control">
+              <option value="">Select TH</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="feature">Type</label>
+            <select id="feature" class="form-control">
+              <option value="">Select Type</option>
+              <option value="L1">L1</option>
+              <option value="Max">Max</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="upgrade">Upgrade</label>
+            <input
+              id="upgrade"
+              type="text"
+              class="form-control"
+              list="upgradeList"
+              placeholder="Enter upgrade name"
+            />
+            <datalist id="upgradeList">
+              <option value="Cannon"></option>
+              <option value="Archer Tower"></option>
+              <option value="Mortar"></option>
+              <option value="Air Defense"></option>
+              <option value="Wizard Tower"></option>
+              <option value="Air Sweeper"></option>
+              <option value="Hidden Tesla"></option>
+              <option value="Bomb Tower"></option>
+              <option value="X-Bow"></option>
+              <option value="Inferno Tower"></option>
+              <option value="Eagle Artillery"></option>
+              <option value="Scattershot"></option>
+              <option value="Builder's Hut"></option>
+              <option value="Spell Tower"></option>
+              <option value="Monolith"></option>
+              <option value="Multi-Archer Tower"></option>
+              <option value="Ricochet Cannon"></option>
+              <option value="Multi-Gear Tower"></option>
+              <option value="Firespitter"></option>
+              <option value="Bomb"></option>
+              <option value="Spring Trap"></option>
+              <option value="Giant Bomb"></option>
+              <option value="Air Bomb"></option>
+              <option value="Seeking Air Mine"></option>
+              <option value="Skeleton Trap"></option>
+              <option value="Tornado Trap"></option>
+              <option value="Giga Bomb"></option>
+              <option value="Gold Mine"></option>
+              <option value="Elixir Collector"></option>
+              <option value="Gold Storage"></option>
+              <option value="Elixir Storage"></option>
+              <option value="Dark Elixir Drill"></option>
+              <option value="Dark Elixir Storage"></option>
+              <option value="CC"></option>
+              <option value="Army Camp"></option>
+              <option value="Dark Barracks"></option>
+              <option value="Laboratory"></option>
+              <option value="Spell Factory"></option>
+              <option value="Hero Hall"></option>
+              <option value="Dark Spell Factory"></option>
+              <option value="Blacksmith"></option>
+              <option value="Workshop"></option>
+              <option value="Pet House"></option>
+              <option value="BK"></option>
+              <option value="Queen"></option>
+              <option value="Warden"></option>
+              <option value="Minion Prince"></option>
+              <option value="RC"></option>
+              <option value="DD"></option>
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label for="lvlInput">Level</label>
+            <div class="slider-container">
+              <input
+                id="lvlSlider"
+                type="range"
+                min="1"
+                max="100"
+                value="1"
+              />
+              <input
+                id="lvlInput"
+                type="number"
+                min="1"
+                max="100"
+                value="1"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Duration</label>
+            <div class="time-inputs">
+              <input
+                id="days"
+                type="number"
+                min="0"
+                class="form-control"
+                placeholder="DD"
+              />
+              <input
+                id="hours"
+                type="number"
+                min="0"
+                max="23"
+                class="form-control"
+                placeholder="HH"
+              />
+              <input
+                id="minutes"
+                type="number"
+                min="0"
+                max="59"
+                class="form-control"
+                placeholder="MM"
+              />
+              <input
+                id="seconds"
+                type="number"
+                min="0"
+                max="59"
+                class="form-control"
+                placeholder="SS"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="addTask()">
+          <span>➕</span> Add Upgrade
+        </button>
+      </div>
+
+      <div class="controls">
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="completion" onclick="setFilter('completion')">
+            ⏱️ Soonest
+          </button>
+          <button class="filter-btn" data-filter="thgroup" onclick="setFilter('thgroup')">
+            🏰 By TH
+          </button>
+          <button class="filter-btn" data-filter="L1" onclick="setFilter('L1')">
+            🎯 L1 Only
+          </button>
+          <button class="filter-btn" data-filter="Max" onclick="setFilter('Max')">
+            ⭐ Max Only
+          </button>
+        </div>
+
+        <button class="btn btn-secondary" onclick="clearAllTasks()">
+          <span>🗑️</span> Clear All
+        </button>
+      </div>
+
+      <div class="task-list" id="taskList">
+        <!-- Tasks will be rendered here -->
+      </div>
+    </div>
+
+    <script>
+      let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      let currentFilter = "completion";
+      const save = () => localStorage.setItem("tasks", JSON.stringify(tasks));
+
+      // Initialize TH dropdown
+      const thSel = document.getElementById("th");
+      for (let i = 1; i <= 18; i++) {
+        let o = document.createElement("option");
+        o.text = "TH " + i;
+        o.value = i;
+        thSel.appendChild(o);
+      }
+
+      // Level slider synchronization
+      const lvlSlider = document.getElementById("lvlSlider");
+      const lvlInput = document.getElementById("lvlInput");
+      lvlSlider.oninput = () => (lvlInput.value = lvlSlider.value);
+      lvlInput.oninput = () => (lvlSlider.value = lvlInput.value);
+
+      // Filter button handler
+      function setFilter(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.filter === filter) btn.classList.add('active');
+        });
+        renderTasks();
+      }
+
+      // Format time without leading zeros
+      function formatTime(d, h, m, s) {
+        const parts = [];
+        if (d > 0) parts.push(d + "d");
+        if (h > 0) parts.push(h + "h");
+        if (m > 0) parts.push(m + "m");
+        if (s > 0 || parts.length === 0) parts.push(s + "s");
+        return parts.join(" ");
+      }
+
+      // Update statistics
+      function updateStats() {
+        const total = tasks.length;
+        const completed = tasks.filter((t) => t.done).length;
+        const active = total - completed;
+
+        const now = Date.now();
+        let totalTime = 0;
+        tasks.forEach((t) => {
+          if (!t.done && t.endTime > now) {
+            totalTime += t.endTime - now;
+          }
+        });
+
+        const totalDays = Math.floor(totalTime / (1000 * 60 * 60 * 24));
+
+        document.getElementById("totalUpgrades").textContent = total;
+        document.getElementById("completedUpgrades").textContent = completed;
+        document.getElementById("activeUpgrades").textContent = active;
+        document.getElementById("timeRemaining").textContent = totalDays > 0 ? totalDays + "d" : "0d";
+
+        // Group tasks by TH level and find first completion for each
+        const thGroups = {};
+        tasks.filter(t => !t.done && t.endTime > now).forEach(t => {
+          if (!thGroups[t.th]) thGroups[t.th] = [];
+          thGroups[t.th].push(t);
+        });
+
+        // Build TH stats HTML
+        const thStatsEl = document.getElementById('thStats');
+        if (Object.keys(thGroups).length > 0) {
+          const sortedTHs = Object.keys(thGroups).sort((a, b) => a - b);
+          let html = '';
+          sortedTHs.forEach(th => {
+            const thTasks = thGroups[th];
+            // Get first task to complete for this TH
+            const firstTask = thTasks.reduce((a, b) => a.endTime < b.endTime ? a : b);
+            const remain = firstTask.endTime - now;
+            const totalSec = Math.floor(remain / 1000);
+            const d = Math.floor(totalSec / 86400);
+            const h = Math.floor((totalSec % 86400) / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            
+            html += `<div class="th-stat-item">
+              <div class="th-stat-value">TH${th}</div>
+              <div class="th-stat-label">${formatTime(d, h, m, 0)}</div>
+            </div>`;
+          });
+          thStatsEl.innerHTML = html;
+        } else {
+          thStatsEl.innerHTML = '';
+        }
+      }
+
+      // Dynamic image loading
+      function getImageUrl(th, feature) {
+        const featureLower = feature.toLowerCase();
+        return `images/th${th}_${featureLower}.png`;
+      }
+
+      function renderTasks() {
+        const list = document.getElementById("taskList");
+        list.innerHTML = "";
+
+        if (tasks.length === 0) {
+          list.innerHTML = `
+      <div class="glass-card empty-state">
+        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076398.png" alt="No upgrades">
+        <h3>No Upgrades Planned</h3>
+        <p>Add your first upgrade to get started!</p>
+      </div>
+    `;
+          updateStats();
+          return;
+        }
+
+        let displayTasks = tasks.slice();
+
+        if (currentFilter === "completion") {
+          displayTasks.sort((a, b) => a.endTime - b.endTime);
+        } else if (currentFilter === "thgroup") {
+          const grouped = {};
+          displayTasks.forEach((t) => {
+            if (!grouped[t.th]) grouped[t.th] = [];
+            grouped[t.th].push(t);
+          });
+
+          Object.keys(grouped)
+            .sort((a, b) => a - b)
+            .forEach((th) => {
+              const title = document.createElement("div");
+              title.className = "group-title";
+              title.textContent = "Town Hall " + th;
+              list.appendChild(title);
+
+              grouped[th]
+                .sort((a, b) => a.endTime - b.endTime)
+                .forEach((t) => {
+                  const idx = tasks.indexOf(t);
+                  list.appendChild(createCard(t, idx));
+                });
+            });
+
+          updateStats();
+          return;
+        } else if (currentFilter === "L1") {
+          displayTasks = displayTasks
+            .filter((t) => t.feature === "L1")
+            .sort((a, b) => a.endTime - b.endTime);
+        } else if (currentFilter === "Max") {
+          displayTasks = displayTasks
+            .filter((t) => t.feature === "Max")
+            .sort((a, b) => a.endTime - b.endTime);
+        }
+
+        displayTasks.forEach((t, i) => {
+          const idx = tasks.indexOf(t);
+          list.appendChild(createCard(t, idx));
+        });
+
+        updateStats();
+      }
+
+      function createCard(t, i) {
+        const card = document.createElement("div");
+        card.className = "glass-card task-card" + (t.done ? " done" : "");
+        card.dataset.index = i;
+
+        const now = Date.now();
+        const remain = t.endTime - now;
+        const totalSec = Math.max(0, Math.floor(remain / 1000));
+        const d = Math.floor(totalSec / 86400);
+        const h = Math.floor((totalSec % 86400) / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+
+        const timeText =
+          remain <= 0
+            ? '<div class="time-finished">✅ Completed!</div>'
+            : `<div class="time-remaining">${formatTime(d, h, m, s)}</div><div style="color: var(--text-secondary); font-size: 0.8rem;">Remaining</div>`;
+
+        card.innerHTML = `
+    <div class="task-header">
+      <div class="task-info">
+        <img src="${getImageUrl(t.th, t.feature)}" class="th-img" alt="TH${t.th}" onerror="this.onerror=null; try { this.src='images/th'+t.th+'_'+t.feature.toLowerCase()+'.gif'; } catch(e) { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+t.th; }">
+        <div class="task-details">
+          <h3>${t.upgrade}</h3>
+          <p>Town Hall ${t.th} • ${t.feature}</p>
+          ${t.level ? `<span class="task-level">Level ${t.level}</span>` : ""}
+        </div>
+      </div>
+      <div class="task-time">
+        ${timeText}
+      </div>
+    </div>
+    <div class="task-actions">
+      <button class="action-btn btn-danger" onclick="removeTask(${i})">
+        <span>🗑️</span> Delete
+      </button>
+      <button class="action-btn btn-success" onclick="showReplace(${i}, this)">
+        <span>🔄</span> Replace
+      </button>
+    </div>
+  `;
+
+        return card;
+      }
+
+      function updateTimers() {
+        const now = Date.now();
+        tasks.forEach((t, i) => {
+          const remain = t.endTime - now;
+          t.done = remain <= 0;
+
+          const totalSec = Math.max(0, Math.floor(remain / 1000));
+          const d = Math.floor(totalSec / 86400);
+          const h = Math.floor((totalSec % 86400) / 3600);
+          const m = Math.floor((totalSec % 3600) / 60);
+          const s = totalSec % 60;
+
+          const timeEl = document.querySelector(
+            `[data-index="${i}"] .time-remaining`,
+          );
+
+          if (remain <= 0) {
+            if (timeEl) {
+              timeEl.parentElement.innerHTML =
+                '<div class="time-finished">✅ Completed!</div>';
+            }
+            const cardEl = document.querySelector(`[data-index="${i}"]`);
+            if (cardEl) cardEl.classList.add("done");
+          } else if (timeEl) {
+            timeEl.textContent = formatTime(d, h, m, s);
+          }
+        });
+
+        updateStats();
+        setTimeout(updateTimers, 1000);
+      }
+
+      function removeTask(i) {
+        if (confirm("Delete this upgrade?")) {
+          tasks.splice(i, 1);
+          save();
+          renderTasks();
+        }
+      }
+
+      function clearAllTasks() {
+        if (tasks.length === 0) return;
+
+        if (confirm("Delete all upgrades?")) {
+          tasks = [];
+          save();
+          renderTasks();
+        }
+      }
+
+      function showReplace(i, btn) {
+        const card = btn.closest(".task-card");
+        if (card.querySelector(".replace-box")) return;
+
+        const t = tasks[i];
+        const box = document.createElement("div");
+        box.className = "replace-box";
+        box.innerHTML = `
+    <input id="newUpgrade${i}" type="text" class="form-control" list="upgradeList" placeholder="Upgrade name" value="${t.upgrade}">
+    <input id="newLevel${i}" type="number" class="form-control" min="1" max="100" placeholder="Level" value="${t.level || ""}">
+    <input id="newDays${i}" type="number" class="form-control" min="0" placeholder="DD">
+    <input id="newHours${i}" type="number" class="form-control" min="0" max="23" placeholder="HH">
+    <input id="newMinutes${i}" type="number" class="form-control" min="0" max="59" placeholder="MM">
+    <input id="newSeconds${i}" type="number" class="form-control" min="0" max="59" placeholder="SS">
+    <button class="btn btn-success" onclick="replaceTask(${i})">
+      <span>✅</span> Save
+    </button>
+  `;
+        card.appendChild(box);
+      }
+
+      function replaceTask(i) {
+        const upgrade = document.getElementById(`newUpgrade${i}`).value.trim();
+        const level =
+          parseInt(document.getElementById(`newLevel${i}`).value) || undefined;
+        const d = parseInt(document.getElementById(`newDays${i}`).value) || 0;
+        const h = parseInt(document.getElementById(`newHours${i}`).value) || 0;
+        const m =
+          parseInt(document.getElementById(`newMinutes${i}`).value) || 0;
+        const s =
+          parseInt(document.getElementById(`newSeconds${i}`).value) || 0;
+        const total = (d * 86400 + h * 3600 + m * 60 + s) * 1000;
+
+        if (!upgrade || total <= 0) {
+          alert("Please fill all required fields!");
+          return;
+        }
+
+        tasks[i] = {
+          ...tasks[i],
+          upgrade,
+          level,
+          endTime: Date.now() + total,
+          done: false,
+        };
+        save();
+        renderTasks();
+      }
+
+      function addTask() {
+        const th = thSel.value;
+        const feature = document.getElementById("feature").value;
+        const upgrade = document.getElementById("upgrade").value.trim();
+        const level = parseInt(lvlInput.value) || undefined;
+        const d = parseInt(document.getElementById("days").value) || 0;
+        const h = parseInt(document.getElementById("hours").value) || 0;
+        const m = parseInt(document.getElementById("minutes").value) || 0;
+        const s = parseInt(document.getElementById("seconds").value) || 0;
+        const total = (d * 86400 + h * 3600 + m * 60 + s) * 1000;
+
+        if (!th || !feature || !upgrade || total <= 0) {
+          alert("Please fill all required fields!");
+          return;
+        }
+
+        tasks.push({
+          th,
+          feature,
+          upgrade,
+          level,
+          endTime: Date.now() + total,
+          done: false,
+        });
+
+        save();
+        renderTasks();
+
+        // Reset form
+        document.getElementById("upgrade").value = "";
+        lvlSlider.value = 1;
+        lvlInput.value = 1;
+        document.getElementById("days").value = "";
+        document.getElementById("hours").value = "";
+        document.getElementById("minutes").value = "";
+        document.getElementById("seconds").value = "";
+      }
+
+      // Initialize the app
+      renderTasks();
+      updateTimers();
+    </script>
+  </body>
+</html>
