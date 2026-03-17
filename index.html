@@ -545,6 +545,10 @@
         justify-content: flex-end;
       }
 
+      .data-actions {
+        margin-top: 18px;
+      }
+
       .filter-buttons {
         display: flex;
         gap: 10px;
@@ -918,22 +922,28 @@
             <div class="stat-value" id="timeRemaining">0d</div>
             <div class="stat-label">Time Left</div>
           </div>
-            <div class="controls-actions">
-              <button
-                class="btn btn-secondary"
-                type="button"
-                onclick="exportAllTasks()"
-              >
-                <span>📤</span> Export All
-              </button>
-              <button
-                class="btn btn-secondary"
-                type="button"
-                onclick="clearAllTasks()"
-              >
-                <span>🗑️</span> Clear All
-              </button>
-            </div>
+        </div>
+
+        <div class="th-stats" id="thStats">
+          <!-- Dynamic TH stats will be inserted here -->
+        </div>
+      </div>
+
+      <div class="glass-card form-section">
+        <h2>⚒️ Add Upgrades</h2>
+
+        <div class="input-method-tabs">
+          <button
+            id="tabManual"
+            class="tab-btn"
+            type="button"
+            onclick="setInputMethod('manual')"
+          >
+            ✍️ Manual Entry
+          </button>
+          <button
+            id="tabJson"
+            class="tab-btn"
             type="button"
             onclick="setInputMethod('json')"
           >
@@ -1089,7 +1099,7 @@
         </div>
 
         <div id="jsonImportSection" class="import-box">
-          <h2 class="import-title">📋 JSON Import</h2>
+          <h2 class="import-title">📋 Process Game Export JSON</h2>
 
           <div class="import-actions">
             <div class="import-actions-left">
@@ -1099,7 +1109,7 @@
                 type="button"
                 onclick="toggleJsonTextarea()"
               >
-                <span>📝</span> Manual Input
+                <span>📝</span> Paste JSON
               </button>
             </div>
 
@@ -1108,18 +1118,36 @@
                 id="btnJsonClipboardProcess"
                 class="btn"
                 type="button"
-                onclick="processCocJson('clipboard')"
+                onclick="processCocJson('clipboard', 'gameOnly')"
               >
-                <span>📋</span> Process Clipboard
+                <span>📋</span> Process Clipboard (Game Export)
+              </button>
+
+              <button
+                id="btnJsonClearImport"
+                class="btn btn-secondary"
+                type="button"
+                onclick="clearImportInput()"
+              >
+                <span>🧹</span> Clear Import
+              </button>
+
+              <button
+                id="btnJsonClipboardBackupImport"
+                class="btn btn-secondary"
+                type="button"
+                onclick="processCocJson('clipboard', 'backupOnly')"
+              >
+                <span>📦</span> Import Backup (Clipboard)
               </button>
 
               <button
                 id="btnJsonPasteProcess"
                 class="btn"
                 type="button"
-                onclick="processCocJson('textarea')"
+                onclick="processCocJson('textarea', 'auto')"
               >
-                <span>⚡</span> Process Pasted JSON
+                <span>⚡</span> Process Pasted JSON (Game/Backup)
               </button>
             </div>
           </div>
@@ -1127,11 +1155,31 @@
           <textarea
             id="cocJson"
             class="form-control import-textarea is-hidden"
-            placeholder="Paste your Clash of Clans JSON here."
+            placeholder="Paste your Clash of Clans game export JSON (or an app backup JSON) here."
           ></textarea>
           <p class="import-hint">
-            Only active upgrades are imported (items with a <b>timer</b>).
+            Use this to process the JSON export from the game (only active
+            upgrades with a <b>timer</b> are imported).<br />
+            You can also paste an app backup created with
+            <b>Export Backup</b> to restore/transfer.
           </p>
+        </div>
+
+        <div class="controls-actions data-actions">
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="exportAllTasks()"
+          >
+            <span>📤</span> Export Backup
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="clearAllTasks()"
+          >
+            <span>🗑️</span> Clear All Tasks
+          </button>
         </div>
       </div>
 
@@ -1150,23 +1198,6 @@
             onclick="setFilter('thgroup')"
           >
             🏰 By TH
-          </button>
-        </div>
-
-        <div class="controls-actions">
-          <button
-            class="btn btn-secondary"
-            type="button"
-            onclick="exportAllTasks()"
-          >
-            <span>📤</span> Export All
-          </button>
-          <button
-            class="btn btn-secondary"
-            type="button"
-            onclick="clearAllTasks()"
-          >
-            <span>🗑️</span> Clear All
           </button>
         </div>
       </div>
@@ -1558,6 +1589,10 @@
       const btnJsonClipboardProcess = document.getElementById(
         "btnJsonClipboardProcess",
       );
+      const btnJsonClearImport = document.getElementById("btnJsonClearImport");
+      const btnJsonClipboardBackupImport = document.getElementById(
+        "btnJsonClipboardBackupImport",
+      );
       const btnJsonPasteProcess = document.getElementById(
         "btnJsonPasteProcess",
       );
@@ -1581,9 +1616,18 @@
       function updateJsonImportUi() {
         if (!cocJsonTextarea) return;
         const isHidden = cocJsonTextarea.classList.contains("is-hidden");
+        const hasText = (cocJsonTextarea.value || "").trim().length > 0;
 
         if (btnJsonClipboardProcess) {
           btnJsonClipboardProcess.classList.toggle("is-hidden", !isHidden);
+        }
+
+        if (btnJsonClipboardBackupImport) {
+          btnJsonClipboardBackupImport.classList.toggle("is-hidden", !isHidden);
+        }
+
+        if (btnJsonClearImport) {
+          btnJsonClearImport.classList.toggle("is-hidden", isHidden && !hasText);
         }
 
         if (btnJsonPasteProcess) {
@@ -1592,7 +1636,7 @@
 
         if (btnJsonPasteToggle) {
           btnJsonPasteToggle.innerHTML = isHidden
-            ? "<span>📝</span> Manual Input"
+            ? "<span>📝</span> Paste JSON"
             : "<span>🙈</span> Hide Input";
         }
       }
@@ -1604,6 +1648,11 @@
           return;
         }
         cocJsonTextarea.classList.toggle("is-hidden");
+        updateJsonImportUi();
+      }
+
+      function clearImportInput() {
+        cocJsonTextarea.value = "";
         updateJsonImportUi();
       }
 
@@ -1853,9 +1902,12 @@
         return String(lvl);
       }
 
-      async function processCocJson(source) {
+      async function processCocJson(source, intent) {
         const mode =
           source === "clipboard" || source === "textarea" ? source : "auto";
+
+        const importIntent =
+          intent === "gameOnly" || intent === "backupOnly" ? intent : "auto";
         let text = "";
 
         if (mode === "clipboard" || mode === "auto") {
@@ -1872,10 +1924,10 @@
 
         if (!text.trim()) {
           if (mode === "textarea") {
-            alert("No JSON pasted. Click Manual Input and paste JSON first.");
+            alert("No JSON pasted. Click Paste JSON and paste JSON first.");
           } else {
             alert(
-              "No JSON found in clipboard. Click Manual Input to paste JSON manually.",
+              "No JSON found in clipboard. Click Paste JSON to paste it manually.",
             );
           }
           return;
@@ -1906,13 +1958,21 @@
         }
 
         // App backup import
-        if (
+        const isBackup =
           json &&
           typeof json === "object" &&
           (json.type === "COC_UPGRADE_MANAGER_BACKUP" ||
             json.type === "COC_UPGRAD_MANAGER_BACKUP") &&
-          Array.isArray(json.tasks)
-        ) {
+          Array.isArray(json.tasks);
+
+        if (isBackup) {
+          if (importIntent === "gameOnly") {
+            alert(
+              "Clipboard looks like an app backup JSON.\n\nUse: Import Backup (Clipboard).",
+            );
+            return;
+          }
+
           const importedTasks = json.tasks
             .filter((t) => t && typeof t === "object")
             .map((t) => {
@@ -1953,6 +2013,13 @@
 
           toggleJsonTextarea(false);
           alert("Backup imported successfully.");
+          return;
+        }
+
+        if (importIntent === "backupOnly") {
+          alert(
+            "Clipboard does not look like an app backup JSON.\n\nUse: Process Clipboard (Game Export), or Paste JSON.",
+          );
           return;
         }
 
@@ -2063,7 +2130,7 @@
 
         if (ok) {
           alert(
-            `Exported ${tasks.length} tasks to clipboard.\n\nPaste it on your other device into JSON Import → Manual Input → Process Pasted JSON.`,
+            `Exported ${tasks.length} tasks to clipboard.\n\nOn your other device: JSON Import → Paste JSON → Process Pasted JSON (Game/Backup).`,
           );
           return;
         }
