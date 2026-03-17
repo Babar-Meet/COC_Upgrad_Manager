@@ -36,9 +36,17 @@
         margin: 0;
         padding: 30px;
         min-height: 100vh;
-        background: 
-          radial-gradient(ellipse at 20% 20%, rgba(0, 150, 200, 0.15) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 80%, rgba(0, 100, 150, 0.1) 0%, transparent 50%),
+        background:
+          radial-gradient(
+            ellipse at 20% 20%,
+            rgba(0, 150, 200, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 80%,
+            rgba(0, 100, 150, 0.1) 0%,
+            transparent 50%
+          ),
           linear-gradient(180deg, #0a0e17 0%, #0f1923 100%);
       }
 
@@ -58,7 +66,12 @@
         font-size: 3rem;
         font-weight: 800;
         margin-bottom: 12px;
-        background: linear-gradient(135deg, #fff 0%, var(--primary) 50%, var(--success) 100%);
+        background: linear-gradient(
+          135deg,
+          #fff 0%,
+          var(--primary) 50%,
+          var(--success) 100%
+        );
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -79,8 +92,8 @@
       /* Glass Cards */
       .glass-card {
         background: var(--bg-card);
-        backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
         border-radius: var(--radius);
         padding: 28px;
         box-shadow: var(--shadow);
@@ -90,13 +103,18 @@
       }
 
       .glass-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
       }
 
       /* Full Width Stats */
@@ -182,7 +200,11 @@
       }
 
       .stat-item.highlight {
-        background: linear-gradient(135deg, rgba(0, 234, 255, 0.2), rgba(0, 255, 195, 0.1));
+        background: linear-gradient(
+          135deg,
+          rgba(0, 234, 255, 0.2),
+          rgba(0, 255, 195, 0.1)
+        );
         border-color: var(--primary);
       }
 
@@ -292,6 +314,7 @@
         border-radius: 3px;
         outline: none;
         -webkit-appearance: none;
+        appearance: none;
       }
 
       .slider-container input[type="range"]::-webkit-slider-thumb {
@@ -313,13 +336,54 @@
       /* Time Inputs */
       .time-inputs {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
       }
 
       .time-inputs input {
         text-align: center;
         font-weight: 600;
+        padding-left: 10px;
+        padding-right: 10px;
+        min-width: 0;
+      }
+
+      /* Clipboard JSON Import */
+      .import-box {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+      }
+
+      .import-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .import-textarea {
+        margin-top: 14px;
+        width: 100%;
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .import-title {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .import-hint {
+        margin-top: 10px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        line-height: 1.3;
       }
 
       /* Premium Buttons */
@@ -434,8 +498,8 @@
 
       .task-card {
         background: var(--bg-card);
-        backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
         border-radius: 18px;
         padding: 24px;
         box-shadow: var(--shadow);
@@ -446,7 +510,7 @@
       }
 
       .task-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -474,11 +538,14 @@
       }
 
       @keyframes completedPulse {
-        0%, 100% {
+        0%,
+        100% {
           box-shadow: 0 0 10px rgba(0, 234, 255, 0.2);
         }
         50% {
-          box-shadow: 0 0 30px rgba(0, 234, 255, 0.6), 0 0 50px rgba(0, 234, 255, 0.3);
+          box-shadow:
+            0 0 30px rgba(0, 234, 255, 0.6),
+            0 0 50px rgba(0, 234, 255, 0.3);
         }
       }
 
@@ -607,6 +674,16 @@
         min-width: 140px;
       }
 
+      .replace-box input {
+        min-width: 0;
+      }
+
+      .replace-box input[type="number"] {
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+      }
+
       /* Group Title */
       .group-title {
         font-weight: 700;
@@ -672,7 +749,7 @@
         body {
           padding: 15px;
         }
-        
+
         .header h1 {
           font-size: 2rem;
         }
@@ -759,18 +836,20 @@
         <h2>⚒️ Add New Upgrade</h2>
         <div class="form-grid">
           <div class="form-group">
-            <label for="th">Town Hall</label>
-            <select id="th" class="form-control">
-              <option value="">Select TH</option>
-            </select>
+            <label for="playerTag">Player Tag</label>
+            <input
+              id="playerTag"
+              type="text"
+              class="form-control"
+              placeholder="#YOURTAG"
+              autocomplete="off"
+            />
           </div>
 
           <div class="form-group">
-            <label for="feature">Type</label>
-            <select id="feature" class="form-control">
-              <option value="">Select Type</option>
-              <option value="L1">L1</option>
-              <option value="Max">Max</option>
+            <label for="th">Town Hall</label>
+            <select id="th" class="form-control">
+              <option value="">Select TH</option>
             </select>
           </div>
 
@@ -845,6 +924,7 @@
                 min="1"
                 max="100"
                 value="1"
+                title="Upgrade level"
               />
               <input
                 id="lvlInput"
@@ -898,21 +978,42 @@
         <button class="btn" onclick="addTask()">
           <span>➕</span> Add Upgrade
         </button>
+
+        <div class="import-box">
+          <div class="import-actions">
+            <h2 class="import-title">📋 JSON Import</h2>
+            <button class="btn btn-secondary" onclick="processCocJson()">
+              <span>⚡</span> Process JSON (Clipboard)
+            </button>
+          </div>
+
+          <textarea
+            id="cocJson"
+            class="form-control import-textarea"
+            placeholder="Paste your Clash of Clans JSON here (optional). The button will try clipboard first."
+          ></textarea>
+          <p class="import-hint">
+            Only active upgrades are imported (items with a <b>timer</b>). Names
+            may show as codes for now.
+          </p>
+        </div>
       </div>
 
       <div class="controls">
         <div class="filter-buttons">
-          <button class="filter-btn active" data-filter="completion" onclick="setFilter('completion')">
+          <button
+            class="filter-btn active"
+            data-filter="completion"
+            onclick="setFilter('completion')"
+          >
             ⏱️ Soonest
           </button>
-          <button class="filter-btn" data-filter="thgroup" onclick="setFilter('thgroup')">
+          <button
+            class="filter-btn"
+            data-filter="thgroup"
+            onclick="setFilter('thgroup')"
+          >
             🏰 By TH
-          </button>
-          <button class="filter-btn" data-filter="L1" onclick="setFilter('L1')">
-            🎯 L1 Only
-          </button>
-          <button class="filter-btn" data-filter="Max" onclick="setFilter('Max')">
-            ⭐ Max Only
           </button>
         </div>
 
@@ -930,6 +1031,13 @@
       let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
       let currentFilter = "completion";
       const save = () => localStorage.setItem("tasks", JSON.stringify(tasks));
+
+      // Persisted player tag
+      const playerTagInput = document.getElementById("playerTag");
+      playerTagInput.value = localStorage.getItem("playerTag") || "";
+      playerTagInput.addEventListener("change", () => {
+        localStorage.setItem("playerTag", playerTagInput.value.trim());
+      });
 
       // Initialize TH dropdown
       const thSel = document.getElementById("th");
@@ -949,9 +1057,9 @@
       // Filter button handler
       function setFilter(filter) {
         currentFilter = filter;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-          btn.classList.remove('active');
-          if (btn.dataset.filter === filter) btn.classList.add('active');
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.dataset.filter === filter) btn.classList.add("active");
         });
         renderTasks();
       }
@@ -985,45 +1093,59 @@
         document.getElementById("totalUpgrades").textContent = total;
         document.getElementById("completedUpgrades").textContent = completed;
         document.getElementById("activeUpgrades").textContent = active;
-        document.getElementById("timeRemaining").textContent = totalDays > 0 ? totalDays + "d" : "0d";
+        document.getElementById("timeRemaining").textContent =
+          totalDays > 0 ? totalDays + "d" : "0d";
 
         // Group tasks by TH level and find first completion for each
         const thGroups = {};
-        tasks.filter(t => !t.done && t.endTime > now).forEach(t => {
-          if (!thGroups[t.th]) thGroups[t.th] = [];
-          thGroups[t.th].push(t);
-        });
+        tasks
+          .filter((t) => !t.done && t.endTime > now)
+          .forEach((t) => {
+            const key = t.th || "Unknown";
+            if (!thGroups[key]) thGroups[key] = [];
+            thGroups[key].push(t);
+          });
 
         // Build TH stats HTML
-        const thStatsEl = document.getElementById('thStats');
+        const thStatsEl = document.getElementById("thStats");
         if (Object.keys(thGroups).length > 0) {
-          const sortedTHs = Object.keys(thGroups).sort((a, b) => a - b);
-          let html = '';
-          sortedTHs.forEach(th => {
+          const sortedTHs = Object.keys(thGroups).sort((a, b) => {
+            const na = Number(a);
+            const nb = Number(b);
+            const aNum = Number.isFinite(na) && a !== "Unknown";
+            const bNum = Number.isFinite(nb) && b !== "Unknown";
+            if (aNum && bNum) return na - nb;
+            if (aNum) return -1;
+            if (bNum) return 1;
+            return String(a).localeCompare(String(b));
+          });
+          let html = "";
+          sortedTHs.forEach((th) => {
             const thTasks = thGroups[th];
             // Get first task to complete for this TH
-            const firstTask = thTasks.reduce((a, b) => a.endTime < b.endTime ? a : b);
+            const firstTask = thTasks.reduce((a, b) =>
+              a.endTime < b.endTime ? a : b,
+            );
             const remain = firstTask.endTime - now;
             const totalSec = Math.floor(remain / 1000);
             const d = Math.floor(totalSec / 86400);
             const h = Math.floor((totalSec % 86400) / 3600);
             const m = Math.floor((totalSec % 3600) / 60);
-            
+
             html += `<div class="th-stat-item">
-              <div class="th-stat-value">TH${th}</div>
+              <div class="th-stat-value">${th === "Unknown" ? "TH?" : "TH" + th}</div>
               <div class="th-stat-label">${formatTime(d, h, m, 0)}</div>
             </div>`;
           });
           thStatsEl.innerHTML = html;
         } else {
-          thStatsEl.innerHTML = '';
+          thStatsEl.innerHTML = "";
         }
       }
 
       // Dynamic image loading
-      function getImageUrl(th, feature) {
-        const featureLower = feature.toLowerCase();
-        return `images/th${th}_${featureLower}.png`;
+      function getImageUrl(th) {
+        return `images/th${th}_max.png`;
       }
 
       function renderTasks() {
@@ -1049,16 +1171,27 @@
         } else if (currentFilter === "thgroup") {
           const grouped = {};
           displayTasks.forEach((t) => {
-            if (!grouped[t.th]) grouped[t.th] = [];
-            grouped[t.th].push(t);
+            const key = t.th || "Unknown";
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(t);
           });
 
           Object.keys(grouped)
-            .sort((a, b) => a - b)
+            .sort((a, b) => {
+              const na = Number(a);
+              const nb = Number(b);
+              const aNum = Number.isFinite(na) && a !== "Unknown";
+              const bNum = Number.isFinite(nb) && b !== "Unknown";
+              if (aNum && bNum) return na - nb;
+              if (aNum) return -1;
+              if (bNum) return 1;
+              return String(a).localeCompare(String(b));
+            })
             .forEach((th) => {
               const title = document.createElement("div");
               title.className = "group-title";
-              title.textContent = "Town Hall " + th;
+              title.textContent =
+                th === "Unknown" ? "Town Hall ?" : "Town Hall " + th;
               list.appendChild(title);
 
               grouped[th]
@@ -1071,14 +1204,6 @@
 
           updateStats();
           return;
-        } else if (currentFilter === "L1") {
-          displayTasks = displayTasks
-            .filter((t) => t.feature === "L1")
-            .sort((a, b) => a.endTime - b.endTime);
-        } else if (currentFilter === "Max") {
-          displayTasks = displayTasks
-            .filter((t) => t.feature === "Max")
-            .sort((a, b) => a.endTime - b.endTime);
         }
 
         displayTasks.forEach((t, i) => {
@@ -1110,10 +1235,10 @@
         card.innerHTML = `
     <div class="task-header">
       <div class="task-info">
-        <img src="${getImageUrl(t.th, t.feature)}" class="th-img" alt="TH${t.th}" onerror="this.onerror=null; try { this.src='images/th'+t.th+'_'+t.feature.toLowerCase()+'.gif'; } catch(e) { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+t.th; }">
+        <img src="${getImageUrl(t.th)}" class="th-img" alt="TH${t.th || "?"}" onerror="this.onerror=null; try { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); } catch(e) { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); }">
         <div class="task-details">
           <h3>${t.upgrade}</h3>
-          <p>Town Hall ${t.th} • ${t.feature}</p>
+          <p>Town Hall ${t.th || "?"}</p>
           ${t.level ? `<span class="task-level">Level ${t.level}</span>` : ""}
         </div>
       </div>
@@ -1235,7 +1360,6 @@
 
       function addTask() {
         const th = thSel.value;
-        const feature = document.getElementById("feature").value;
         const upgrade = document.getElementById("upgrade").value.trim();
         const level = parseInt(lvlInput.value) || undefined;
         const d = parseInt(document.getElementById("days").value) || 0;
@@ -1244,14 +1368,13 @@
         const s = parseInt(document.getElementById("seconds").value) || 0;
         const total = (d * 86400 + h * 3600 + m * 60 + s) * 1000;
 
-        if (!th || !feature || !upgrade || total <= 0) {
+        if (!th || !upgrade || total <= 0) {
           alert("Please fill all required fields!");
           return;
         }
 
         tasks.push({
           th,
-          feature,
           upgrade,
           level,
           endTime: Date.now() + total,
@@ -1274,6 +1397,166 @@
       // Initialize the app
       renderTasks();
       updateTimers();
+
+      const COC_IMPORT_CATEGORY_LABELS = {
+        buildings: "Building",
+        traps: "Trap",
+        units: "Troop",
+        siege_machines: "Siege",
+        heroes: "Hero",
+        spells: "Spell",
+        pets: "Pet",
+        equipment: "Equipment",
+        buildings2: "BB Building",
+        traps2: "BB Trap",
+        units2: "BB Troop",
+        heroes2: "BB Hero",
+      };
+
+      function formatCocImportLabel(category, code) {
+        const label =
+          COC_IMPORT_CATEGORY_LABELS[category] ||
+          String(category || "Item")
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+        return `${code} (${label})`;
+      }
+
+      function extractActiveUpgradesFromCocJson(json, thFallback) {
+        const categories = [
+          "buildings",
+          "traps",
+          "units",
+          "siege_machines",
+          "heroes",
+          "spells",
+          "pets",
+          "equipment",
+          "buildings2",
+          "traps2",
+          "units2",
+          "heroes2",
+        ];
+
+        const now = Date.now();
+        const th = String(thFallback || "").trim();
+        const results = [];
+
+        categories.forEach((cat) => {
+          const arr = Array.isArray(json?.[cat]) ? json[cat] : [];
+          arr.forEach((item) => {
+            const timerSec = Number(item?.timer);
+            if (!Number.isFinite(timerSec) || timerSec <= 0) return;
+
+            const code = item?.data;
+            if (code === undefined || code === null) return;
+            const lvl = Number(item?.lvl);
+            const level = Number.isFinite(lvl) ? lvl : undefined;
+
+            results.push({
+              th: th || "",
+              upgrade: formatCocImportLabel(cat, code),
+              level,
+              endTime: now + Math.floor(timerSec * 1000),
+              done: false,
+            });
+          });
+        });
+
+        // Sort by soonest completion
+        results.sort((a, b) => a.endTime - b.endTime);
+        return results;
+      }
+
+      function findTownHallLevelFromCocJson(json) {
+        const buildings = Array.isArray(json?.buildings) ? json.buildings : [];
+        const th = buildings.find(
+          (b) => Number(b?.data) === 1000001 && Number.isFinite(Number(b?.lvl)),
+        );
+        const lvl = th ? parseInt(th.lvl, 10) : NaN;
+        if (!Number.isFinite(lvl) || lvl <= 0) return "";
+        return String(lvl);
+      }
+
+      async function processCocJson() {
+        let text = "";
+        try {
+          text = (await navigator.clipboard.readText()) || "";
+        } catch (e) {
+          // Ignore; clipboard may be blocked on insecure contexts
+        }
+
+        if (!text.trim()) {
+          text = document.getElementById("cocJson").value || "";
+        }
+
+        if (!text.trim()) {
+          alert(
+            "No JSON found. Copy your CoC JSON first (clipboard), or paste it into the box.",
+          );
+          return;
+        }
+
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          // Some copies include extra characters; try extracting the JSON object.
+          const start = text.indexOf("{");
+          const end = text.lastIndexOf("}");
+          if (start >= 0 && end > start) {
+            try {
+              json = JSON.parse(text.slice(start, end + 1));
+            } catch (e2) {
+              alert(
+                "Invalid JSON. Make sure you copied the full text from Clash of Clans.",
+              );
+              return;
+            }
+          } else {
+            alert(
+              "Invalid JSON. Make sure you copied the full text from Clash of Clans.",
+            );
+            return;
+          }
+        }
+
+        const tag = typeof json?.tag === "string" ? json.tag.trim() : "";
+        if (tag) {
+          playerTagInput.value = tag;
+          localStorage.setItem("playerTag", tag);
+        }
+
+        const thLevel = findTownHallLevelFromCocJson(json);
+        if (thLevel) {
+          thSel.value = thLevel;
+        }
+
+        const extracted = extractActiveUpgradesFromCocJson(
+          json,
+          thLevel || thSel.value,
+        );
+        if (extracted.length === 0) {
+          alert(
+            "No active upgrades found in the JSON (no items with a timer).\nNothing was changed.",
+          );
+          return;
+        }
+
+        if (tasks.length > 0) {
+          const ok = confirm(
+            `Replace your current list with ${extracted.length} active upgrades from CoC JSON?\n\nThis will remove upgrades that are not active in-game.`,
+          );
+          if (!ok) return;
+        }
+
+        tasks = extracted;
+        save();
+        renderTasks();
+        alert(
+          `Imported ${extracted.length} active upgrades${tag ? ` for ${tag}` : ""}.`,
+        );
+      }
     </script>
   </body>
 </html>
