@@ -1,0 +1,7 @@
+services:
+  - type: static
+    name: CocUpgradManager
+    env: static
+    buildCommand: # leave empty
+    publishDir: .
+    autoDeploy: true
