@@ -7,6 +7,7 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
       :root {
+        color-scheme: dark;
         --primary: #00eaff;
         --primary-glow: rgba(0, 234, 255, 0.4);
         --secondary: #ff4081;
@@ -327,6 +328,22 @@
         background: rgba(0, 234, 255, 0.05);
       }
 
+      input.form-control:-webkit-autofill,
+      input.form-control:-webkit-autofill:hover,
+      input.form-control:-webkit-autofill:focus,
+      textarea.form-control:-webkit-autofill,
+      textarea.form-control:-webkit-autofill:hover,
+      textarea.form-control:-webkit-autofill:focus,
+      select.form-control:-webkit-autofill,
+      select.form-control:-webkit-autofill:hover,
+      select.form-control:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--text);
+        box-shadow: 0 0 0 1000px var(--bg-card-light) inset;
+        border: 1px solid var(--border);
+        transition: background-color 9999s ease-out;
+        caret-color: var(--text);
+      }
+
       .form-control::placeholder {
         color: var(--text-secondary);
         opacity: 0.5;
@@ -339,6 +356,11 @@
         background-repeat: no-repeat;
         background-position: right 15px center;
         padding-right: 40px;
+      }
+
+      select.form-control option {
+        background: var(--bg-dark);
+        color: var(--text);
       }
 
       /* Level Slider */
@@ -893,165 +915,172 @@
 
       <!-- Full Width Add Form Section -->
       <div class="glass-card form-section">
-
-
         <h2>⚒️ Add Upgrades</h2>
 
         <div class="input-method-tabs">
-          <button id="tabManual" class="tab-btn" type="button" onclick="setInputMethod('manual')">
+          <button
+            id="tabManual"
+            class="tab-btn"
+            type="button"
+            onclick="setInputMethod('manual')"
+          >
             ✍️ Manual Entry
           </button>
-          <button id="tabJson" class="tab-btn" type="button" onclick="setInputMethod('json')">
+          <button
+            id="tabJson"
+            class="tab-btn"
+            type="button"
+            onclick="setInputMethod('json')"
+          >
             📋 JSON Import
           </button>
         </div>
 
         <div id="manualEntrySection">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="playerTag">Player Tag</label>
-            <input
-              id="playerTag"
-              type="text"
-              class="form-control"
-              placeholder="#YOURTAG"
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="th">Town Hall</label>
-            <select id="th" class="form-control">
-              <option value="">Select TH</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="upgrade">Upgrade</label>
-            <input
-              id="upgrade"
-              type="text"
-              class="form-control"
-              list="upgradeList"
-              placeholder="Enter upgrade name"
-            />
-            <datalist id="upgradeList">
-              <option value="Cannon"></option>
-              <option value="Archer Tower"></option>
-              <option value="Mortar"></option>
-              <option value="Air Defense"></option>
-              <option value="Wizard Tower"></option>
-              <option value="Air Sweeper"></option>
-              <option value="Hidden Tesla"></option>
-              <option value="Bomb Tower"></option>
-              <option value="X-Bow"></option>
-              <option value="Inferno Tower"></option>
-              <option value="Eagle Artillery"></option>
-              <option value="Scattershot"></option>
-              <option value="Builder's Hut"></option>
-              <option value="Spell Tower"></option>
-              <option value="Monolith"></option>
-              <option value="Multi-Archer Tower"></option>
-              <option value="Ricochet Cannon"></option>
-              <option value="Multi-Gear Tower"></option>
-              <option value="Firespitter"></option>
-              <option value="Bomb"></option>
-              <option value="Spring Trap"></option>
-              <option value="Giant Bomb"></option>
-              <option value="Air Bomb"></option>
-              <option value="Seeking Air Mine"></option>
-              <option value="Skeleton Trap"></option>
-              <option value="Tornado Trap"></option>
-              <option value="Giga Bomb"></option>
-              <option value="Gold Mine"></option>
-              <option value="Elixir Collector"></option>
-              <option value="Gold Storage"></option>
-              <option value="Elixir Storage"></option>
-              <option value="Dark Elixir Drill"></option>
-              <option value="Dark Elixir Storage"></option>
-              <option value="CC"></option>
-              <option value="Army Camp"></option>
-              <option value="Dark Barracks"></option>
-              <option value="Laboratory"></option>
-              <option value="Spell Factory"></option>
-              <option value="Hero Hall"></option>
-              <option value="Dark Spell Factory"></option>
-              <option value="Blacksmith"></option>
-              <option value="Workshop"></option>
-              <option value="Pet House"></option>
-              <option value="BK"></option>
-              <option value="Queen"></option>
-              <option value="Warden"></option>
-              <option value="Minion Prince"></option>
-              <option value="RC"></option>
-              <option value="DD"></option>
-            </datalist>
-          </div>
-
-          <div class="form-group">
-            <label for="lvlInput">Level</label>
-            <div class="slider-container">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="playerTag">Player Tag</label>
               <input
-                id="lvlSlider"
-                type="range"
-                min="1"
-                max="100"
-                value="1"
-                title="Upgrade level"
-              />
-              <input
-                id="lvlInput"
-                type="number"
-                min="1"
-                max="100"
-                value="1"
+                id="playerTag"
+                type="text"
                 class="form-control"
+                placeholder="#YOURTAG"
+                autocomplete="off"
               />
+            </div>
+
+            <div class="form-group">
+              <label for="th">Town Hall</label>
+              <select id="th" class="form-control">
+                <option value="">Select TH</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="upgrade">Upgrade</label>
+              <input
+                id="upgrade"
+                type="text"
+                class="form-control"
+                list="upgradeList"
+                placeholder="Enter upgrade name"
+              />
+              <datalist id="upgradeList">
+                <option value="Cannon"></option>
+                <option value="Archer Tower"></option>
+                <option value="Mortar"></option>
+                <option value="Air Defense"></option>
+                <option value="Wizard Tower"></option>
+                <option value="Air Sweeper"></option>
+                <option value="Hidden Tesla"></option>
+                <option value="Bomb Tower"></option>
+                <option value="X-Bow"></option>
+                <option value="Inferno Tower"></option>
+                <option value="Eagle Artillery"></option>
+                <option value="Scattershot"></option>
+                <option value="Builder's Hut"></option>
+                <option value="Spell Tower"></option>
+                <option value="Monolith"></option>
+                <option value="Multi-Archer Tower"></option>
+                <option value="Ricochet Cannon"></option>
+                <option value="Multi-Gear Tower"></option>
+                <option value="Firespitter"></option>
+                <option value="Bomb"></option>
+                <option value="Spring Trap"></option>
+                <option value="Giant Bomb"></option>
+                <option value="Air Bomb"></option>
+                <option value="Seeking Air Mine"></option>
+                <option value="Skeleton Trap"></option>
+                <option value="Tornado Trap"></option>
+                <option value="Giga Bomb"></option>
+                <option value="Gold Mine"></option>
+                <option value="Elixir Collector"></option>
+                <option value="Gold Storage"></option>
+                <option value="Elixir Storage"></option>
+                <option value="Dark Elixir Drill"></option>
+                <option value="Dark Elixir Storage"></option>
+                <option value="CC"></option>
+                <option value="Army Camp"></option>
+                <option value="Dark Barracks"></option>
+                <option value="Laboratory"></option>
+                <option value="Spell Factory"></option>
+                <option value="Hero Hall"></option>
+                <option value="Dark Spell Factory"></option>
+                <option value="Blacksmith"></option>
+                <option value="Workshop"></option>
+                <option value="Pet House"></option>
+                <option value="BK"></option>
+                <option value="Queen"></option>
+                <option value="Warden"></option>
+                <option value="Minion Prince"></option>
+                <option value="RC"></option>
+                <option value="DD"></option>
+              </datalist>
+            </div>
+
+            <div class="form-group">
+              <label for="lvlInput">Level</label>
+              <div class="slider-container">
+                <input
+                  id="lvlSlider"
+                  type="range"
+                  min="1"
+                  max="100"
+                  value="1"
+                  title="Upgrade level"
+                />
+                <input
+                  id="lvlInput"
+                  type="number"
+                  min="1"
+                  max="100"
+                  value="1"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="form-group duration-group">
+              <label>Duration</label>
+              <div class="time-inputs">
+                <input
+                  id="days"
+                  type="number"
+                  min="0"
+                  class="form-control"
+                  placeholder="DD"
+                />
+                <input
+                  id="hours"
+                  type="number"
+                  min="0"
+                  max="23"
+                  class="form-control"
+                  placeholder="HH"
+                />
+                <input
+                  id="minutes"
+                  type="number"
+                  min="0"
+                  max="59"
+                  class="form-control"
+                  placeholder="MM"
+                />
+                <input
+                  id="seconds"
+                  type="number"
+                  min="0"
+                  max="59"
+                  class="form-control"
+                  placeholder="SS"
+                />
+              </div>
             </div>
           </div>
 
-          <div class="form-group duration-group">
-            <label>Duration</label>
-            <div class="time-inputs">
-              <input
-                id="days"
-                type="number"
-                min="0"
-                class="form-control"
-                placeholder="DD"
-              />
-              <input
-                id="hours"
-                type="number"
-                min="0"
-                max="23"
-                class="form-control"
-                placeholder="HH"
-              />
-              <input
-                id="minutes"
-                type="number"
-                min="0"
-                max="59"
-                class="form-control"
-                placeholder="MM"
-              />
-              <input
-                id="seconds"
-                type="number"
-                min="0"
-                max="59"
-                class="form-control"
-                placeholder="SS"
-              />
-            </div>
-          </div>
-        </div>
-
-        <button class="btn" onclick="addTask()">
-          <span>➕</span> Add Upgrade
-        </button>
-
+          <button class="btn" onclick="addTask()">
+            <span>➕</span> Add Upgrade
+          </button>
         </div>
 
         <div id="jsonImportSection" class="import-box">
@@ -1511,7 +1540,9 @@
       const btnJsonClipboardProcess = document.getElementById(
         "btnJsonClipboardProcess",
       );
-      const btnJsonPasteProcess = document.getElementById("btnJsonPasteProcess");
+      const btnJsonPasteProcess = document.getElementById(
+        "btnJsonPasteProcess",
+      );
 
       function setInputMethod(method) {
         const m = method === "json" ? "json" : "manual";
