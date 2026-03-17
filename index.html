@@ -235,6 +235,47 @@
         margin-bottom: 25px;
       }
 
+      .input-method-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      .tab-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 12px 18px;
+        border-radius: 12px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, var(--primary), #00b8d4);
+        color: #000;
+        border-color: var(--primary);
+        box-shadow: 0 4px 20px rgba(0, 234, 255, 0.3);
+      }
+
+      .is-hidden {
+        display: none !important;
+      }
+
       .upgrade-form h2 {
         font-size: 1rem;
         margin-bottom: 20px;
@@ -361,6 +402,13 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
+      }
+
+      .import-actions-left {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
       }
 
       .import-textarea {
@@ -833,7 +881,20 @@
 
       <!-- Full Width Add Form Section -->
       <div class="glass-card form-section">
-        <h2>⚒️ Add New Upgrade</h2>
+
+
+        <h2>⚒️ Add Upgrades</h2>
+
+        <div class="input-method-tabs">
+          <button id="tabManual" class="tab-btn" type="button" onclick="setInputMethod('manual')">
+            ✍️ Manual Entry
+          </button>
+          <button id="tabJson" class="tab-btn" type="button" onclick="setInputMethod('json')">
+            📋 JSON Import
+          </button>
+        </div>
+
+        <div id="manualEntrySection">
         <div class="form-grid">
           <div class="form-group">
             <label for="playerTag">Player Tag</label>
@@ -979,22 +1040,29 @@
           <span>➕</span> Add Upgrade
         </button>
 
-        <div class="import-box">
+        </div>
+
+        <div id="jsonImportSection" class="import-box">
           <div class="import-actions">
-            <h2 class="import-title">📋 JSON Import</h2>
-            <button class="btn btn-secondary" onclick="processCocJson()">
-              <span>⚡</span> Process JSON (Clipboard)
+            <div class="import-actions-left">
+              <h2 class="import-title">📋 JSON Import</h2>
+              <button class="btn btn-secondary" type="button" onclick="toggleJsonTextarea()">
+                <span>📝</span> Manual Input
+              </button>
+            </div>
+
+            <button class="btn btn-secondary" type="button" onclick="processCocJson()">
+              <span>⚡</span> Process
             </button>
           </div>
 
           <textarea
             id="cocJson"
-            class="form-control import-textarea"
-            placeholder="Paste your Clash of Clans JSON here (optional). The button will try clipboard first."
+            class="form-control import-textarea is-hidden"
+            placeholder="Paste your Clash of Clans JSON here. (Clipboard is used first, if allowed.)"
           ></textarea>
           <p class="import-hint">
-            Only active upgrades are imported (items with a <b>timer</b>). Names
-            may show as codes for now.
+            Only active upgrades are imported (items with a <b>timer</b>).
           </p>
         </div>
       </div>
@@ -1400,6 +1468,34 @@
       renderTasks();
       updateTimers();
 
+      const cocJsonTextarea = document.getElementById("cocJson");
+      const manualSection = document.getElementById("manualEntrySection");
+      const jsonSection = document.getElementById("jsonImportSection");
+      const tabManual = document.getElementById("tabManual");
+      const tabJson = document.getElementById("tabJson");
+
+      function setInputMethod(method) {
+        const m = method === "json" ? "json" : "manual";
+        localStorage.setItem("inputMethod", m);
+
+        tabManual.classList.toggle("active", m === "manual");
+        tabJson.classList.toggle("active", m === "json");
+
+        manualSection.classList.toggle("is-hidden", m !== "manual");
+        jsonSection.classList.toggle("is-hidden", m !== "json");
+      }
+
+      // Default input method
+      setInputMethod(localStorage.getItem("inputMethod") || "manual");
+
+      function toggleJsonTextarea(forceState) {
+        if (typeof forceState === "boolean") {
+          cocJsonTextarea.classList.toggle("is-hidden", !forceState);
+          return;
+        }
+        cocJsonTextarea.classList.toggle("is-hidden");
+      }
+
       const COC_IMPORT_CATEGORY_LABELS = {
         buildings: "Building",
         traps: "Trap",
@@ -1549,6 +1645,26 @@
         return COC_DATA_ID_TO_NAME[id] || `UNKNOWN_${id}`;
       }
 
+      function normalizeCocDataId(id, category) {
+        const raw = String(id).trim();
+        if (COC_DATA_ID_TO_NAME[raw]) return raw;
+
+        // Some exports may omit a zero for 8-digit families (e.g., 1200001 -> 12000001)
+        const cat = String(category || "").toLowerCase();
+        const isEightDigitFamily =
+          cat.includes("trap") ||
+          cat.includes("spell") ||
+          cat.includes("hero") ||
+          cat.includes("pet");
+
+        if (isEightDigitFamily && raw.length === 7) {
+          const candidate = raw.slice(0, 2) + "0" + raw.slice(2);
+          if (COC_DATA_ID_TO_NAME[candidate]) return candidate;
+        }
+
+        return raw;
+      }
+
       function getCocCategoryLabel(category) {
         return (
           COC_IMPORT_CATEGORY_LABELS[category] ||
@@ -1590,17 +1706,18 @@
 
             const code = item?.data;
             if (code === undefined || code === null) return;
+            const normalizedCode = normalizeCocDataId(code, cat);
             const lvl = Number(item?.lvl);
             const level = Number.isFinite(lvl) ? lvl : undefined;
 
             const categoryLabel = getCocCategoryLabel(cat);
-            const friendlyName = getCocNameById(code);
+            const friendlyName = getCocNameById(normalizedCode);
             const upgrade = friendlyName;
 
             results.push({
               tag: String(tag || "").trim(),
               th: th || "",
-              code: String(code),
+              code: String(normalizedCode),
               category: categoryLabel,
               upgrade,
               level,
@@ -1634,12 +1751,12 @@
         }
 
         if (!text.trim()) {
-          text = document.getElementById("cocJson").value || "";
+          text = cocJsonTextarea.value || "";
         }
 
         if (!text.trim()) {
           alert(
-            "No JSON found. Copy your CoC JSON first (clipboard), or paste it into the box.",
+            "No JSON found. Copy your CoC JSON first (clipboard), or use Manual Input to paste it.",
           );
           return;
         }
@@ -1725,6 +1842,8 @@
         tasks.sort((a, b) => a.endTime - b.endTime);
         save();
         renderTasks();
+        // Keep UI clean after success
+        toggleJsonTextarea(false);
         alert(
           `Imported ${extracted.length} active upgrades${incomingTag ? ` for ${incomingTag}` : ""}.`,
         );
