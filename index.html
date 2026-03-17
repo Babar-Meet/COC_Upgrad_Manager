@@ -538,6 +538,13 @@
         flex-wrap: wrap;
       }
 
+      .controls-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
       .filter-buttons {
         display: flex;
         gap: 10px;
@@ -702,6 +709,11 @@
         background-clip: text;
         color: transparent;
         margin-bottom: 4px;
+      }
+
+      .task-time-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
       }
 
       .time-finished {
@@ -906,29 +918,22 @@
             <div class="stat-value" id="timeRemaining">0d</div>
             <div class="stat-label">Time Left</div>
           </div>
-        </div>
-        <!-- TH breakdown -->
-        <div class="th-stats" id="thStats">
-          <!-- Dynamic TH stats will be inserted here -->
-        </div>
-      </div>
-
-      <!-- Full Width Add Form Section -->
-      <div class="glass-card form-section">
-        <h2>⚒️ Add Upgrades</h2>
-
-        <div class="input-method-tabs">
-          <button
-            id="tabManual"
-            class="tab-btn"
-            type="button"
-            onclick="setInputMethod('manual')"
-          >
-            ✍️ Manual Entry
-          </button>
-          <button
-            id="tabJson"
-            class="tab-btn"
+            <div class="controls-actions">
+              <button
+                class="btn btn-secondary"
+                type="button"
+                onclick="exportAllTasks()"
+              >
+                <span>📤</span> Export All
+              </button>
+              <button
+                class="btn btn-secondary"
+                type="button"
+                onclick="clearAllTasks()"
+              >
+                <span>🗑️</span> Clear All
+              </button>
+            </div>
             type="button"
             onclick="setInputMethod('json')"
           >
@@ -1148,9 +1153,22 @@
           </button>
         </div>
 
-        <button class="btn btn-secondary" onclick="clearAllTasks()">
-          <span>🗑️</span> Clear All
-        </button>
+        <div class="controls-actions">
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="exportAllTasks()"
+          >
+            <span>📤</span> Export All
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="clearAllTasks()"
+          >
+            <span>🗑️</span> Clear All
+          </button>
+        </div>
       </div>
 
       <div class="task-list" id="taskList">
@@ -1361,7 +1379,7 @@
         const timeText =
           remain <= 0
             ? '<div class="time-finished">✅ Completed!</div>'
-            : `<div class="time-remaining">${formatTime(d, h, m, s)}</div><div style="color: var(--text-secondary); font-size: 0.8rem;">Remaining</div>`;
+            : `<div class="time-remaining">${formatTime(d, h, m, s)}</div><div class="task-time-subtitle">Remaining</div>`;
 
         card.innerHTML = `
     <div class="task-header">
@@ -1887,6 +1905,57 @@
           }
         }
 
+        // App backup import
+        if (
+          json &&
+          typeof json === "object" &&
+          (json.type === "COC_UPGRADE_MANAGER_BACKUP" ||
+            json.type === "COC_UPGRAD_MANAGER_BACKUP") &&
+          Array.isArray(json.tasks)
+        ) {
+          const importedTasks = json.tasks
+            .filter((t) => t && typeof t === "object")
+            .map((t) => {
+              const endTime = Number(t.endTime);
+              return {
+                ...t,
+                endTime: Number.isFinite(endTime) ? endTime : Date.now(),
+                done: Boolean(t.done),
+                upgrade: String(t.upgrade || ""),
+                th: t.th === undefined || t.th === null ? "" : String(t.th),
+                tag: String(t.tag || "").trim(),
+                category: t.category ? String(t.category) : t.category,
+                code: t.code ? String(t.code) : t.code,
+              };
+            })
+            .filter((t) => t.upgrade);
+
+          if (importedTasks.length === 0) {
+            alert("Backup has no tasks to import.");
+            return;
+          }
+
+          const ok = confirm(
+            `Import backup with ${importedTasks.length} tasks?\n\nThis will REPLACE your current list (current: ${tasks.length}).`,
+          );
+          if (!ok) return;
+
+          tasks = importedTasks.sort((a, b) => a.endTime - b.endTime);
+          save();
+          renderTasks();
+
+          const incomingTag =
+            typeof json.playerTag === "string" ? json.playerTag.trim() : "";
+          if (incomingTag) {
+            playerTagInput.value = incomingTag;
+            localStorage.setItem("playerTag", incomingTag);
+          }
+
+          toggleJsonTextarea(false);
+          alert("Backup imported successfully.");
+          return;
+        }
+
         const incomingTag =
           (typeof json?.tag === "string" ? json.tag.trim() : "") ||
           (playerTagInput.value || "").trim();
@@ -1948,6 +2017,65 @@
         toggleJsonTextarea(false);
         alert(
           `Imported ${extracted.length} active upgrades${incomingTag ? ` for ${incomingTag}` : ""}.`,
+        );
+      }
+
+      async function copyTextToClipboard(text) {
+        const payload = String(text || "");
+        if (!payload) return false;
+
+        try {
+          await navigator.clipboard.writeText(payload);
+          return true;
+        } catch (e) {
+          // Fallback
+        }
+
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = payload;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.top = "-9999px";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          const ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      async function exportAllTasks() {
+        const backup = {
+          type: "COC_UPGRADE_MANAGER_BACKUP",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          playerTag: (playerTagInput.value || "").trim(),
+          tasks,
+        };
+
+        const text = JSON.stringify(backup, null, 2);
+        const ok = await copyTextToClipboard(text);
+
+        if (ok) {
+          alert(
+            `Exported ${tasks.length} tasks to clipboard.\n\nPaste it on your other device into JSON Import → Manual Input → Process Pasted JSON.`,
+          );
+          return;
+        }
+
+        // As a last resort, open the manual input box so user can copy manually
+        setInputMethod("json");
+        toggleJsonTextarea(true);
+        cocJsonTextarea.value = text;
+        cocJsonTextarea.focus();
+        cocJsonTextarea.select();
+        alert(
+          "Clipboard copy was blocked by the browser.\n\nI placed the export JSON in the input box—long-press / Ctrl+C to copy it manually.",
         );
       }
     </script>
