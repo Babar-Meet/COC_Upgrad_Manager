@@ -1238,7 +1238,7 @@
         <img src="${getImageUrl(t.th)}" class="th-img" alt="TH${t.th || "?"}" onerror="this.onerror=null; try { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); } catch(e) { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); }">
         <div class="task-details">
           <h3>${t.upgrade}</h3>
-          <p>Town Hall ${t.th || "?"}</p>
+          <p>Town Hall ${t.th || "?"}${t.tag ? ` • ${t.tag}` : ""}</p>
           ${t.level ? `<span class="task-level">Level ${t.level}</span>` : ""}
         </div>
       </div>
@@ -1362,6 +1362,7 @@
         const th = thSel.value;
         const upgrade = document.getElementById("upgrade").value.trim();
         const level = parseInt(lvlInput.value) || undefined;
+        const tag = (playerTagInput.value || "").trim();
         const d = parseInt(document.getElementById("days").value) || 0;
         const h = parseInt(document.getElementById("hours").value) || 0;
         const m = parseInt(document.getElementById("minutes").value) || 0;
@@ -1374,6 +1375,7 @@
         }
 
         tasks.push({
+          tag,
           th,
           upgrade,
           level,
@@ -1422,7 +1424,7 @@
         return `${code} (${label})`;
       }
 
-      function extractActiveUpgradesFromCocJson(json, thFallback) {
+      function extractActiveUpgradesFromCocJson(json, thFallback, tag) {
         const categories = [
           "buildings",
           "traps",
@@ -1454,6 +1456,7 @@
             const level = Number.isFinite(lvl) ? lvl : undefined;
 
             results.push({
+              tag: String(tag || "").trim(),
               th: th || "",
               upgrade: formatCocImportLabel(cat, code),
               level,
@@ -1521,10 +1524,13 @@
           }
         }
 
-        const tag = typeof json?.tag === "string" ? json.tag.trim() : "";
-        if (tag) {
-          playerTagInput.value = tag;
-          localStorage.setItem("playerTag", tag);
+        const incomingTag =
+          (typeof json?.tag === "string" ? json.tag.trim() : "") ||
+          (playerTagInput.value || "").trim();
+
+        if (incomingTag) {
+          playerTagInput.value = incomingTag;
+          localStorage.setItem("playerTag", incomingTag);
         }
 
         const thLevel = findTownHallLevelFromCocJson(json);
@@ -1535,6 +1541,7 @@
         const extracted = extractActiveUpgradesFromCocJson(
           json,
           thLevel || thSel.value,
+          incomingTag,
         );
         if (extracted.length === 0) {
           alert(
@@ -1543,18 +1550,39 @@
           return;
         }
 
+        const existingTags = new Set(tasks.map((t) => t?.tag).filter(Boolean));
+
         if (tasks.length > 0) {
-          const ok = confirm(
-            `Replace your current list with ${extracted.length} active upgrades from CoC JSON?\n\nThis will remove upgrades that are not active in-game.`,
-          );
-          if (!ok) return;
+          if (!incomingTag) {
+            const ok = confirm(
+              `No player tag found in JSON.\n\nReplace your entire list with ${extracted.length} active upgrades from CoC JSON?`,
+            );
+            if (!ok) return;
+            tasks = extracted;
+          } else if (existingTags.has(incomingTag)) {
+            const ok = confirm(
+              `Same account detected (${incomingTag}).\n\nReplace ONLY this account's upgrades with ${extracted.length} active upgrades from CoC JSON?\n\nOther accounts will be kept.`,
+            );
+            if (!ok) return;
+            tasks = tasks
+              .filter((t) => (t?.tag || "") !== incomingTag)
+              .concat(extracted);
+          } else {
+            const ok = confirm(
+              `New account detected (${incomingTag}).\n\nAdd ${extracted.length} active upgrades for this account and keep your existing upgrades?`,
+            );
+            if (!ok) return;
+            tasks = tasks.concat(extracted);
+          }
+        } else {
+          tasks = extracted;
         }
 
-        tasks = extracted;
+        tasks.sort((a, b) => a.endTime - b.endTime);
         save();
         renderTasks();
         alert(
-          `Imported ${extracted.length} active upgrades${tag ? ` for ${tag}` : ""}.`,
+          `Imported ${extracted.length} active upgrades${incomingTag ? ` for ${incomingTag}` : ""}.`,
         );
       }
     </script>
