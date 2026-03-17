@@ -381,6 +381,10 @@
         gap: 10px;
       }
 
+      .duration-group {
+        grid-column: 1 / -1;
+      }
+
       .time-inputs input {
         text-align: center;
         font-weight: 600;
@@ -411,6 +415,14 @@
         align-items: center;
       }
 
+      .import-actions-right {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
       .import-textarea {
         margin-top: 14px;
         width: 100%;
@@ -419,7 +431,7 @@
       }
 
       .import-title {
-        margin: 0;
+        margin: 0 0 12px 0;
         font-size: 1rem;
         color: var(--primary);
         font-weight: 600;
@@ -998,7 +1010,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group duration-group">
             <label>Duration</label>
             <div class="time-inputs">
               <input
@@ -1043,23 +1055,45 @@
         </div>
 
         <div id="jsonImportSection" class="import-box">
+          <h2 class="import-title">📋 JSON Import</h2>
+
           <div class="import-actions">
             <div class="import-actions-left">
-              <h2 class="import-title">📋 JSON Import</h2>
-              <button class="btn btn-secondary" type="button" onclick="toggleJsonTextarea()">
+              <button
+                id="btnJsonPasteToggle"
+                class="btn btn-secondary"
+                type="button"
+                onclick="toggleJsonTextarea()"
+              >
                 <span>📝</span> Manual Input
               </button>
             </div>
 
-            <button class="btn btn-secondary" type="button" onclick="processCocJson()">
-              <span>⚡</span> Process
-            </button>
+            <div class="import-actions-right">
+              <button
+                id="btnJsonClipboardProcess"
+                class="btn"
+                type="button"
+                onclick="processCocJson('clipboard')"
+              >
+                <span>📋</span> Process Clipboard
+              </button>
+
+              <button
+                id="btnJsonPasteProcess"
+                class="btn"
+                type="button"
+                onclick="processCocJson('textarea')"
+              >
+                <span>⚡</span> Process Pasted JSON
+              </button>
+            </div>
           </div>
 
           <textarea
             id="cocJson"
             class="form-control import-textarea is-hidden"
-            placeholder="Paste your Clash of Clans JSON here. (Clipboard is used first, if allowed.)"
+            placeholder="Paste your Clash of Clans JSON here."
           ></textarea>
           <p class="import-hint">
             Only active upgrades are imported (items with a <b>timer</b>).
@@ -1473,6 +1507,11 @@
       const jsonSection = document.getElementById("jsonImportSection");
       const tabManual = document.getElementById("tabManual");
       const tabJson = document.getElementById("tabJson");
+      const btnJsonPasteToggle = document.getElementById("btnJsonPasteToggle");
+      const btnJsonClipboardProcess = document.getElementById(
+        "btnJsonClipboardProcess",
+      );
+      const btnJsonPasteProcess = document.getElementById("btnJsonPasteProcess");
 
       function setInputMethod(method) {
         const m = method === "json" ? "json" : "manual";
@@ -1483,17 +1522,40 @@
 
         manualSection.classList.toggle("is-hidden", m !== "manual");
         jsonSection.classList.toggle("is-hidden", m !== "json");
+
+        updateJsonImportUi();
       }
 
       // Default input method
       setInputMethod(localStorage.getItem("inputMethod") || "manual");
 
+      function updateJsonImportUi() {
+        if (!cocJsonTextarea) return;
+        const isHidden = cocJsonTextarea.classList.contains("is-hidden");
+
+        if (btnJsonClipboardProcess) {
+          btnJsonClipboardProcess.classList.toggle("is-hidden", !isHidden);
+        }
+
+        if (btnJsonPasteProcess) {
+          btnJsonPasteProcess.classList.toggle("is-hidden", isHidden);
+        }
+
+        if (btnJsonPasteToggle) {
+          btnJsonPasteToggle.innerHTML = isHidden
+            ? "<span>📝</span> Manual Input"
+            : "<span>🙈</span> Hide Input";
+        }
+      }
+
       function toggleJsonTextarea(forceState) {
         if (typeof forceState === "boolean") {
           cocJsonTextarea.classList.toggle("is-hidden", !forceState);
+          updateJsonImportUi();
           return;
         }
         cocJsonTextarea.classList.toggle("is-hidden");
+        updateJsonImportUi();
       }
 
       const COC_IMPORT_CATEGORY_LABELS = {
@@ -1742,22 +1804,31 @@
         return String(lvl);
       }
 
-      async function processCocJson() {
+      async function processCocJson(source) {
+        const mode =
+          source === "clipboard" || source === "textarea" ? source : "auto";
         let text = "";
-        try {
-          text = (await navigator.clipboard.readText()) || "";
-        } catch (e) {
-          // Ignore; clipboard may be blocked on insecure contexts
+
+        if (mode === "clipboard" || mode === "auto") {
+          try {
+            text = (await navigator.clipboard.readText()) || "";
+          } catch (e) {
+            // Ignore; clipboard may be blocked on insecure contexts
+          }
         }
 
-        if (!text.trim()) {
+        if (!text.trim() && (mode === "textarea" || mode === "auto")) {
           text = cocJsonTextarea.value || "";
         }
 
         if (!text.trim()) {
-          alert(
-            "No JSON found. Copy your CoC JSON first (clipboard), or use Manual Input to paste it.",
-          );
+          if (mode === "textarea") {
+            alert("No JSON pasted. Click Manual Input and paste JSON first.");
+          } else {
+            alert(
+              "No JSON found in clipboard. Click Manual Input to paste JSON manually.",
+            );
+          }
           return;
         }
 
