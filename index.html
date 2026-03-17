@@ -1238,7 +1238,7 @@
         <img src="${getImageUrl(t.th)}" class="th-img" alt="TH${t.th || "?"}" onerror="this.onerror=null; try { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); } catch(e) { this.src='https://via.placeholder.com/65x65/1a2033/00eaff?text=TH'+(t.th||'?'); }">
         <div class="task-details">
           <h3>${t.upgrade}</h3>
-          <p>Town Hall ${t.th || "?"}${t.tag ? ` • ${t.tag}` : ""}</p>
+          <p>Town Hall ${t.th || "?"}${t.tag ? ` • ${t.tag}` : ""}${t.category ? ` • ${t.category}` : ""}${t.code && String(t.upgrade || "").startsWith("UNKNOWN_") ? ` • ID ${t.code}` : ""}</p>
           ${t.level ? `<span class="task-level">Level ${t.level}</span>` : ""}
         </div>
       </div>
@@ -1415,13 +1415,150 @@
         heroes2: "BB Hero",
       };
 
-      function formatCocImportLabel(category, code) {
-        const label =
+      const COC_DATA_ID_TO_NAME = {
+        // ================= BUILDINGS =================
+        1000000: "Army Camp",
+        1000001: "Town Hall",
+        1000002: "Elixir Collector",
+        1000003: "Elixir Storage",
+        1000004: "Gold Mine",
+        1000005: "Gold Storage",
+        1000006: "Barracks",
+        1000007: "Laboratory",
+        1000008: "Cannon",
+        1000009: "Archer Tower",
+        1000010: "Wall",
+        1000011: "Wizard Tower",
+        1000012: "Air Defense",
+        1000013: "Mortar",
+        1000014: "Clan Castle",
+        1000015: "Builders Hut",
+        1000019: "Hidden Tesla",
+        1000020: "Spell Factory",
+        1000021: "X-Bow",
+        1000023: "Dark Elixir Drill",
+        1000024: "Dark Elixir Storage",
+        1000026: "Dark Barracks",
+        1000027: "Inferno Tower",
+        1000028: "Air Sweeper",
+        1000029: "Dark Spell Factory",
+        1000059: "Workshop",
+        1000068: "Pet House",
+        1000070: "Blacksmith",
+        1000071: "Hero Hall",
+        1000072: "Spell Tower",
+        1000077: "Monolith",
+        1000084: "Multi-Archer Tower",
+        1000085: "Ricochet Cannon",
+        1000089: "Firespitter",
+        1000097: "Crafted Defense",
+
+        // ================= TRAPS =================
+        12000000: "Bomb",
+        12000001: "Spring Trap",
+        12000002: "Giant Bomb",
+        12000005: "Air Bomb",
+        12000006: "Seeking Air Mine",
+        12000008: "Skeleton Trap",
+        12000016: "Tornado Trap",
+        12000020: "Giga Bomb",
+
+        // ================= SPELLS =================
+        26000000: "Lightning Spell",
+        26000001: "Healing Spell",
+        26000002: "Rage Spell",
+        26000003: "Jump Spell",
+        26000005: "Freeze Spell",
+        26000009: "Poison Spell",
+        26000010: "Earthquake Spell",
+        26000011: "Haste Spell",
+        26000016: "Clone Spell",
+        26000017: "Skeleton Spell",
+        26000028: "Bat Spell",
+        26000035: "Invisibility Spell",
+        26000053: "Recall Spell",
+        26000070: "Overgrowth Spell",
+        26000098: "Revive Spell",
+        26000109: "Ice Block Spell",
+
+        // ================= HEROES =================
+        28000000: "Barbarian King",
+        28000001: "Archer Queen",
+        28000002: "Grand Warden",
+        28000004: "Royal Champion",
+        28000006: "Minion Prince",
+
+        // ================= TROOPS =================
+        4000000: "Barbarian",
+        4000001: "Archer",
+        4000002: "Goblin",
+        4000003: "Giant",
+        4000004: "Wall Breaker",
+        4000005: "Balloon",
+        4000006: "Wizard",
+        4000007: "Healer",
+        4000008: "Dragon",
+        4000009: "P.E.K.K.A",
+        4000010: "Minion",
+        4000011: "Hog Rider",
+        4000012: "Valkyrie",
+        4000013: "Golem",
+        4000015: "Witch",
+        4000017: "Lava Hound",
+        4000022: "Bowler",
+        4000023: "Baby Dragon",
+        4000024: "Miner",
+
+        // ================= SIEGE / SPECIAL =================
+        4000051: "Wall Wrecker",
+        4000052: "Battle Blimp",
+        4000053: "Yeti",
+        4000058: "Ice Golem",
+        4000059: "Electro Dragon",
+        4000062: "Stone Slammer",
+        4000065: "Dragon Rider",
+        4000075: "Siege Barracks",
+        4000082: "Headhunter",
+        4000087: "Log Launcher",
+        4000091: "Flame Flinger",
+        4000092: "Battle Drill",
+        4000095: "Electro Titan",
+        4000097: "Apprentice Warden",
+        4000110: "Root Rider",
+        4000123: "Druid",
+        4000132: "Thrower",
+        4000135: "Troop Launcher",
+        4000150: "Furnace",
+
+        // ================= PETS =================
+        73000000: "L.A.S.S.I",
+        73000001: "Electro Owl",
+        73000002: "Mighty Yak",
+        73000003: "Unicorn",
+        73000004: "Phoenix",
+        73000007: "Poison Lizard",
+        73000008: "Diggy",
+        73000009: "Frosty",
+        73000010: "Spirit Fox",
+        73000011: "Angry Jelly",
+        73000016: "Sneezy",
+      };
+
+      function getName(id) {
+        return COC_DATA_ID_TO_NAME[id] || `UNKNOWN_${id}`;
+      }
+
+      function getCocCategoryLabel(category) {
+        return (
           COC_IMPORT_CATEGORY_LABELS[category] ||
           String(category || "Item")
             .replace(/_/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase());
-        return `${code} (${label})`;
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+        );
+      }
+
+      function getCocNameById(code) {
+        return getName(String(code));
       }
 
       function extractActiveUpgradesFromCocJson(json, thFallback, tag) {
@@ -1455,10 +1592,16 @@
             const lvl = Number(item?.lvl);
             const level = Number.isFinite(lvl) ? lvl : undefined;
 
+            const categoryLabel = getCocCategoryLabel(cat);
+            const friendlyName = getCocNameById(code);
+            const upgrade = friendlyName;
+
             results.push({
               tag: String(tag || "").trim(),
               th: th || "",
-              upgrade: formatCocImportLabel(cat, code),
+              code: String(code),
+              category: categoryLabel,
+              upgrade,
               level,
               endTime: now + Math.floor(timerSec * 1000),
               done: false,
